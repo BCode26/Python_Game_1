@@ -1,4 +1,3 @@
-# main.py
 import time
 import pygame
 import random
@@ -13,7 +12,7 @@ def play_music_enemy():
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
 def play_music_story():
-    music_file = Path(__file__).parent / "music" / "Undertale Yellow OST_ 001  - Once Upon A Truthful Time.mp3"
+    music_file = Path(__file__).parent / "music" / "Undertale Yellow OST_ 01 - Once Upon A Truthful Time.mp3"
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
 def play_music_dun1():
@@ -25,7 +24,7 @@ def play_music_dun2():
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
 def play_music_shop():
-    music_file = Path(__file__).parent / "music" / "Undertale Yellow OST_ 0123  - Occupied Turf.mp3"
+    music_file = Path(__file__).parent / "music" / "Undertale Yellow OST_ 023 - Occupied Turf.mp3"
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
 def play_music_approaching_death():
@@ -125,6 +124,9 @@ class Player:
                 else:
                     print("You failed to run away...")
             enemyhit_chance = random.randint(1,100)
+            if enemy.enemy_hp <= 0:
+                print("The enemy has been defeated!")
+                break
             if enemyhit_chance >= 50:
                 self.hp -= (enemy.enemy_atk - self.defe)
                 print("The enemy attacked you and..!")
@@ -137,9 +139,9 @@ class Player:
                 print("missed...")
                 time.sleep(1)
     def Shop(self):
+            play_music_shop()
             while i in range(0, 1000):
                 print(f"You have {self.gold} gold.")
-                play_music_shop()
                 if self.sword == 0 and self.armor == 0 and self.staff == 0:
                     shop_choice = input("What would you like to buy?  1. sword | 2. health potion | 3. armor | 4. staff | 5. leave ")
                     if shop_choice == "1":
@@ -210,15 +212,17 @@ name = input("What is your name? ")
 player = Player(name)
 enemy = Enemy()
 encounter = random.randint(1,100)
-progress = 0
+progress = 10
 if player.name == "Beckett":
     while i in range(0, 1000000):
+        time.sleep(0.1)
         print("Nope")
         i += 1
 print(f"Hello, {player.name}")
 input("Press enter to continue...")
 stop_music()
 play_music_story()
+time.sleep(2)
 print(f"{player.name}, you are a brave adventurer. You have embarked on a quest to kill the Dark Lord after he destroyed the kingdom.")
 time.sleep(3)
 print("You will have to fight many enemies and make your way through the ruined kingdom.")
@@ -231,9 +235,9 @@ print("You will have to defeat the Dark Lord to win the game.")
 time.sleep(3)
 print(f"Good luck, {player.name}!")
 time.sleep(3)
+play_music_dun1()
 while progress < 100:
-    play_music_dun1()
-    print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 2}%")
+    print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 5}%")
     time.sleep(3)
     if progress == 10 or progress == 20 or progress == 30 or progress == 40 or progress == 50 or progress == 60 or progress == 70 or progress == 80 or progress == 90:
         print("You are making good progress!")
@@ -246,10 +250,11 @@ while progress < 100:
         player.Battle(enemy)
         # fight while both combatants have HP above 0
     if enemy.enemy_hp <= 0:
-        print("You defeated the enemy!")
         player.gold += 10
         print("You gained 10 gold!")
         player.kills += 1
+        stop_music()
+    play_music_dun1()
     while i in range(0, 1000):
         opt1 = input("Would you like to keep progressing, rest, or check stats?   1. progress | 2. rest | 3. check stats ")
         if opt1 == "1":
@@ -283,4 +288,3 @@ while i in range(0, 1000):
         print("'You made it here quickly.'")
         time.sleep(2)
         print(f"'It only took you {days} days to find me.'")
-        
