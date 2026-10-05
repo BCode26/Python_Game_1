@@ -2,6 +2,9 @@ import time
 import pygame
 import random
 from pathlib import Path
+import json
+
+# Initialize pygame mixer
 pygame.mixer.init()
 def play_music_start():
     music_file = Path(__file__).parent / "music" / "Start Menu.mp3"
@@ -11,15 +14,19 @@ def play_music_enemy():
     music_file = Path(__file__).parent / "music" / "Undertale Yellow OST_ 127  - Enemy Retreating.mp3"
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
+def play_music_boss1():
+    music_file = Path(__file__).parent / "music" / "Hammer of New Kunlun (Kuafus Theme).mp3"
+    pygame.mixer.music.load(music_file)
+    pygame.mixer.music.play(-1)
 def play_music_story():
     music_file = Path(__file__).parent / "music" / "Undertale Yellow OST_ 01 - Once Upon A Truthful Time.mp3"
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
-def play_music_dun1():
+def play_music_fields():
     music_file = Path(__file__).parent / "music" / "Seclusion - Undertale Yellow.mp3"
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
-def play_music_dun2():
+def play_music_caves():
     music_file = Path(__file__).parent / "music" / "Undertale Yellow OST_ 037 - Mining Co.mp3"
     pygame.mixer.music.load(music_file)
     pygame.mixer.music.play(-1)
@@ -33,17 +40,89 @@ def play_music_approaching_death():
     pygame.mixer.music.play(-1)
 def stop_music():
     pygame.mixer.music.stop()
+
+def Fields():
+    global progress, days, encounter
+    while progress < 20:
+        print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 5}%")
+        time.sleep(3)
+        if progress == 10 or progress == 20 or progress == 30 or progress == 40 or progress == 50 or progress == 60 or progress == 70 or progress == 80 or progress == 90 and not boss:
+            print("You are making good progress!")
+            input("Press enter to continue...")
+            player.Shop()
+        if encounter > 30:
+            print("You encounter an enemy!")
+            time.sleep(2)
+            player.Battle(enemy)
+        if enemy.enemy_hp <= 0:
+            player.gold += 10
+            print("You gained 10 gold!")
+            player.kills += 1
+            stop_music()
+            play_music_fields()
+        while i in range(0, 1000):
+            opt1 = input("Would you like to keep progressing, rest, or check stats? 1. progress | 2. rest | 3. check stats ")
+            if opt1 == "1":
+                progress += 1
+                days += 1
+                print("You make more progress.")
+                break
+            elif opt1 == "2":
+                player.hp = player.max_hp
+                days += 1
+                print("You rested for 1 day. Health fully restored!")
+                break
+            elif opt1 == "3":
+                player.check_stats()
+        enemy.enemy_hp = enemy.enemy_totalhp
+        encounter = random.randint(1,100)
+
+def Caves():
+    while progress < 40:
+        print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 2.5}%")
+        time.sleep(3)
+        if progress == 10 or progress == 20 or progress == 30 or progress == 40 or progress == 50 or progress == 60 or progress == 70 or progress == 80 or progress == 90 and not boss:
+            print("You are making good progress!")
+            input("Press enter to continue...")
+            player.Shop()
+        if encounter > 30:
+            print("You encounter an enemy!")
+            time.sleep(2)
+            player.Battle(enemy)
+        if enemy.enemy_hp <= 0:
+            player.gold += 10
+            print("You gained 10 gold!")
+            player.kills += 1
+            stop_music()
+            play_music_caves()
+        while i in range(0, 1000):
+            opt1 = input("Would you like to keep progressing, rest, or check stats? 1. progress | 2. rest | 3. check stats ")
+            if opt1 == "1":
+                progress += 1
+                days += 1
+                print("You make more progress.")
+                break
+            elif opt1 == "2":
+                player.hp = player.max_hp
+                days += 1
+                print("You rested for 1 day. Health fully restored!")
+                break
+            elif opt1 == "3":
+                player.check_stats()
+        enemy.enemy_hp = enemy.enemy_totalhp
+        encounter = random.randint(1,100)
+
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, character):
         self.name = name
-        self.hp = 100
-        self.max_hp = 100
-        self.atk = 10
-        self.defe = 5
+        self.max_hp = character["max_hp"]
+        self.hp = self.max_hp
+        self.atk = character["atk"]
+        self.defe = character["defe"]
         self.gold = 0
         self.sword = 0
         self.armor = 0
-        self.magic = 0
+        self.magic = character["magic"]
         self.totalinv_space = 10
         self.remaininv_space = self.totalinv_space
         self.staff = 0
@@ -51,36 +130,107 @@ class Player:
         self.hp_potion = 0
         self.hit_chance = random.randint(1, 100)
         self.bighit_chance = random.randint(1, 100)
+    # Changes the player's stats based on their equipment
     def stat_up(self):
         if self.sword == 1:
-            self.atk += 5
-        elif self.sword == 2:
-            self.atk += 10
-        elif self.sword == 3:
-            self.atk += 15
-        elif self.sword == 4:
-            self.atk += 20
-        elif self.armor == 1:
-            self.defe += 5
-        elif self.armor == 2:
-            self.defe += 10
-        elif self.armor == 3:
-            self.defe += 15
-        elif self.armor == 4:  
-            self.defe += 20
-        elif self.staff == 1:
-            self.magic += 10
-        elif self.staff == 2:
-            self.magic += 10
-        elif self.staff == 3:
-            self.magic += 20
-        elif self.staff == 4:
-            self.magic += 30
+            self.atk = 15
+        if self.sword == 2:
+            self.atk = 25
+        if self.sword == 3:
+            self.atk = 40
+        if self.sword == 4:
+            self.atk = 60
+        if self.armor == 1:
+            self.defe = 10
+        if self.armor == 2:
+            self.defe = 20
+        if self.armor == 3:
+            self.defe = 35
+        if self.armor == 4:  
+            self.defe = 55
+        if self.staff == 1:
+            self.magic = 10
+        if self.staff == 2:
+            self.magic = 20
+        if self.staff == 3:
+            self.magic = 40
+        if self.staff == 4:
+            self.magic = 70
+    # The battle system for the boss
+    def Boss_Battle(self, boss):
+        while boss.boss_hp > 0 and self.hp > 0:
+            if progress == 20:
+                play_music_boss1()
+                print(f"Your health is at {self.hp}/{self.max_hp}. The Craftsman's health is at {boss.boss_hp}/{boss.boss_totalhp}.")
+            if progress == 40:
+                pass
+            action = input("What would you like to do?  1. attack | 2. risk attack | 3. item | 4. magic ")
+            if action == "1":
+                self.hit_chance = random.randint(1, 100)
+                if self.hit_chance >= 20:
+                    boss.boss_hp -= self.atk
+                    print("You dealt", self.atk, "damage to the Craftsman!")
+                    time.sleep(2)
+                else:
+                    print("The attack missed...")
+                    time.sleep(1)
+            elif action == "2":
+                self.bighit_chance = random.randint(1, 100)
+                if self.bighit_chance >= 50:
+                    boss.boss_hp -= self.atk * 3
+                    print(f"You dealt {self.atk * 3} damage to the Craftsman")
+                    time.sleep(2)
+                else:
+                    print("The attack missed...")
+                    time.sleep(1)
+            elif action == "3":
+                if self.hp_potion > 0:
+                    heal = random.randint(30, 70)
+                    self.hp_potion -= 1
+                    self.hp += heal
+                    if self.hp > self.max_hp:
+                        self.hp = self.max_hp
+                    print(f"You used a health potion and healed {heal} health!")
+                    time.sleep(2)
+                else:
+                    print("You don't have any health potions!")
+                    time.sleep(1)
+                    continue
+            elif action == "4":
+                if self.magic > 0:
+                    magic_damage = random.randint(10, 30)
+                    boss.boss_hp -= (magic_damage + self.magic)
+                    print(f"You casted a spell to deal {magic_damage + self.magic} damage to the Craftsman!")
+                    time.sleep(2)
+                else:
+                    print("You don't have any magic!")
+                    time.sleep(1)
+                    continue
+            else:
+                print("Invalid action. Please choose a valid option.")
+                continue
+            enemyhit_chance = random.randint(1,100)
+            if boss.boss_hp <= 0:
+                print(f"The Craftsman has been defeated!")
+                break
+            if enemyhit_chance >= 50:
+                self.hp -= (boss.boss_atk - self.defe)
+                print("The Craftsman attacked you and..!")
+                time.sleep(0.5)
+                print(f"dealt {boss.boss_atk - self.defe} damage!")
+                time.sleep(1)
+            else:
+                print("The Craftsman attacked and...!")
+                time.sleep(0.5)
+                print("missed...")
+                time.sleep(1)
+
+    # The battle system for a normal enemy
     def Battle(self, enemy):
         play_music_enemy()
         while enemy.enemy_hp > 0 and self.hp > 0:
             print(f"Your health is at {self.hp}/{self.max_hp}. The enemy's health is at {enemy.enemy_hp}/{enemy.enemy_totalhp}.")
-            action = input("What would you like to do?  1. attack | 2. risk attack | 3. item | 4. run ")
+            action = input("What would you like to do?  1. attack | 2. risk attack | 3. item | 4. run | 5. magic ")
             if action == "1":
                 self.hit_chance = random.randint(1, 100)
                 if self.hit_chance >= 20:
@@ -111,9 +261,11 @@ class Player:
                 else:
                     print("You don't have any health potions!")
                     time.sleep(1)
+                    continue
             elif action == "4":
                 if self.armor == -1:
                     print("You ran away, coward...")
+                    break
                 run_chance = random.randint(1,100)
                 if run_chance >= enemy.enemy_hp * 2:
                     print("You successfully ran away!")
@@ -123,6 +275,19 @@ class Player:
                     break
                 else:
                     print("You failed to run away...")
+            elif action == "5":
+                if self.magic > 0:
+                    magic_damage = random.randint(10, 30)
+                    enemy.enemy_hp -= (magic_damage + self.magic)
+                    print(f"You casted a spell to deal {magic_damage + self.magic} damage to the enemy!")
+                    time.sleep(2)
+                else:
+                    print("You don't have any magic!")
+                    time.sleep(1)
+                    continue
+            else:
+                print("Invalid action. Please choose a valid option.")
+                continue
             enemyhit_chance = random.randint(1,100)
             if enemy.enemy_hp <= 0:
                 print("The enemy has been defeated!")
@@ -138,17 +303,16 @@ class Player:
                 time.sleep(0.5)
                 print("missed...")
                 time.sleep(1)
+    # Shop system for the player to buy items and equipment
     def Shop(self):
             play_music_shop()
-            while i in range(0, 1000):
+            while i in range(0, 1000) and progress == 10:
                 print(f"You have {self.gold} gold.")
                 if self.sword == 0 and self.armor == 0 and self.staff == 0:
-                    shop_choice = input("What would you like to buy?  1. sword | 2. health potion | 3. armor | 4. staff | 5. leave ")
+                    shop_choice = input("What would you like to buy?  1.  wooden sword | 2. health potion | 3. wooden armor | 4. woodenstaff | 5. leave ")
                     if shop_choice == "1":
                         if self.gold <= 30:
                             print("You don't have enough gold!")
-                        elif self.sword > 0:
-                            print("You already have a wooden sword!")
                         elif self.sword == 0 and self.gold >= 30:
                             self.sword += 1
                             self.gold -= 30
@@ -183,9 +347,193 @@ class Player:
                     elif shop_choice == "5":
                         print("You left the shop.")
                         break
+                    else:
+                        print("Invalid choice. Please choose a valid option.")
+                        continue
                 elif self.sword == 1 and self.armor == 0 and self.staff == 0:
-                    shop_choice = input("What would you like to buy?  1. sword | 2. health potion | 3. armor | 4. staff | 5. leave ")
-                
+                    shop_choice = input("What would you like to buy?  1. health potion | 2. wooden armor | 3. wooden staff | 4. leave ")
+                    if shop_choice == "1":
+                        if self.gold <= 15:
+                            print("You don't have enough gold!")
+                        elif self.remaininv_space == 0:
+                            print("You don't have enough inventory space!")
+                        elif self.gold >= 15 and self.remaininv_space > 0:
+                            self.hp_potion += 1
+                            self.remaininv_space -= 1
+                            self.gold -= 15
+                            print("You bought a health potion!")
+                    elif shop_choice == "2":
+                        if self.gold >= 50:
+                            self.armor += 1
+                            self.gold -= 50
+                            print("You bought wooden armor!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "3":
+                        if self.gold >= 80:
+                            self.staff += 1
+                            self.gold -= 80
+                            print("You bought a staff!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "4":
+                        print("You left the shop.")
+                        break
+                elif self.sword == 0 and self.armor == 1 and self.staff == 0:
+                    shop_choice = input("What would you like to buy?  1. wooden sword | 2. health potion | 3. wooden staff | 4. leave ")
+                    if shop_choice == "1":
+                        if self.gold >= 30:
+                            self.sword += 1
+                            self.gold -= 30
+                            print("You bought a wooden sword!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                        
+                    elif shop_choice == "2":
+                        if self.gold <= 15:
+                            print("You don't have enough gold!")
+                        elif self.remaininv_space == 0:
+                            print("You don't have enough inventory space!")
+                        elif self.gold >= 15 and self.remaininv_space > 0:
+                            self.hp_potion += 1
+                        self.remaininv_space -= 1
+                        self.gold -= 15
+                        print("You bought a health potion!")
+                    elif shop_choice == "3":
+                        if self.gold >= 80:
+                            self.staff += 1
+                            self.gold -= 80
+                            print("You bought a staff!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "4":
+                        print("You left the shop.")
+                        break
+
+                elif self.sword == 0 and self.armor == 0 and self.staff == 1:
+                    shop_choice = input("What would you like to buy?  1. wooden sword | 2. health potion | 3. wooden armor | 4. leave ")
+                    if shop_choice == "1":
+                        if self.gold >= 30:
+                            self.sword += 1
+                            self.gold -= 30
+                            print("You bought a wooden sword!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "2":
+                        if self.gold <= 15:
+                            print("You don't have enough gold!")
+                        elif self.remaininv_space == 0:
+                            print("You don't have enough inventory space!")
+                        elif self.gold >= 15 and self.remaininv_space > 0:
+                            self.hp_potion += 1
+                            self.remaininv_space -= 1
+                            self.gold -= 15
+                            print("You bought a health potion!")
+                    elif shop_choice == "3":
+                        if self.gold >= 50:
+                            self.armor += 1
+                            self.gold -= 50
+                            print("You bought wooden armor!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "4":
+                        print("You left the shop.")
+                        break
+
+                elif self.sword == 1 and self.armor == 1 and self.staff == 0:
+                    shop_choice = input("What would you like to buy?  1. health potion | 2. wooden staff | 3. leave ")
+                    if shop_choice == "1":
+                        if self.gold <= 15:
+                            print("You don't have enough gold!")
+                        elif self.remaininv_space == 0:
+                            print("You don't have enough inventory space!")
+                        elif self.gold >= 15 and self.remaininv_space > 0:
+                            self.hp_potion += 1
+                            self.remaininv_space -= 1
+                            self.gold -= 15
+                            print("You bought a health potion!")
+                    elif shop_choice == "2":
+                        if self.gold >= 80:
+                            self.staff += 1
+                            self.gold -= 80
+                            print("You bought a staff!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "3":
+                        print("You left the shop.")
+                        break
+
+                elif self.sword == 1 and self.armor == 0 and self.staff == 1:
+                    shop_choice = input("What would you like to buy?  1. health potion | 2. wooden armor | 3. leave ")
+                    if shop_choice == "1":
+                        if self.gold <= 15:
+                            print("You don't have enough gold!")
+                        elif self.remaininv_space == 0:
+                            print("You don't have enough inventory space!")
+                        elif self.gold >= 15 and self.remaininv_space > 0:
+                            self.hp_potion += 1
+                            self.remaininv_space -= 1
+                            self.gold -= 15
+                            print("You bought a health potion!")
+                    elif shop_choice == "2":
+                        if self.gold >= 50:
+                            self.armor += 1
+                            self.gold -= 50
+                            print("You bought wooden armor!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "3":
+                        print("You left the shop.")
+                        break
+
+                elif self.sword == 0 and self.armor == 1 and self.staff == 1:
+                    shop_choice = input("What would you like to buy?  1. health potion | 2. wooden sword | 3. leave ")
+                    if shop_choice == "1":
+                        if self.gold <= 15:
+                            print("You don't have enough gold!")
+                        elif self.remaininv_space == 0:
+                            print("You don't have enough inventory space!")
+                        elif self.gold >= 15 and self.remaininv_space > 0:
+                            self.hp_potion += 1
+                            self.remaininv_space -= 1
+                            self.gold -= 15
+                            print("You bought a health potion!")
+                    elif shop_choice == "2":
+                        if self.gold >= 30:
+                            self.sword += 1
+                            self.gold -= 30
+                            print("You bought a wooden sword!")
+                            self.stat_up()
+                        else:
+                            print("You don't have enough gold!")
+                    elif shop_choice == "3":
+                        print("You left the shop.")
+                        break
+
+                elif self.sword == 1 and self.armor == 1 and self.staff == 1:
+                    shop_choice = input("What would you like to buy?  1. health potion | 2. leave ")
+                    if shop_choice == "1":
+                        if self.gold <= 15:
+                            print("You don't have enough gold!")
+                        elif self.remaininv_space == 0:
+                            print("You don't have enough inventory space!")
+                        elif self.gold >= 15 and self.remaininv_space > 0:
+                            self.hp_potion += 1
+                            self.remaininv_space -= 1
+                            self.gold -= 15
+                            print("You bought a health potion!")
+                    elif shop_choice == "2":
+                        print("You left the shop.")
+                        break
+    # Allows the player to check their stats at any time
     def check_stats(self):
             print(f"Health: {self.hp}/{self.max_hp}")
             print(f"Attack: {self.atk}")
@@ -197,32 +545,60 @@ class Player:
             print(f"Health Potions: {self.hp_potion}")
             print(f"Remaining Inventory Space: {self.remaininv_space}")
 
+# Loads character data from the .json file
+play_music_start()
+
+name = input("What is your name? ")
+
+with (Path(__file__).parent / "character.json").open(encoding="utf-8") as file:
+    characters = json.load(file)["characters"]
+for number, character in enumerate(characters, start=1):
+    print(f"{number}. {character['type']}")
+
+while True:
+    try:
+        choice = int(input("Choose a character: "))
+        if 1 <= choice <= len(characters):
+            break
+    except ValueError:
+        pass
+    print("Enter a valid character number.")
+
+player = Player(name, characters[choice - 1])
+# The enemy
 class Enemy:
     def __init__(self):
         self.enemy_hp = 30
-        self.enemy_atk = 10
+        self.enemy_atk = 15
         self.enemy_totalhp = 30
         self.enemyhit_chance = random.randint(1,100)
-play_music_start()
+# The Boss
+class Boss(Enemy):
+    def __init__(self, bosses):
+        super().__init__()
+        self.boss_atk = enemy.enemy_atk * 3
+        self.boss_totalhp = enemy.enemy_totalhp * 5
+        self.boss_hp = self.boss_totalhp
+        self.bosshit_chance = random.randint(1,100)
+        self.boss_name = bosses["name"]
 print("Welcome")
 opt1 = "placeholder"
 days = 0
+boss = False
 i = 1
-name = input("What is your name? ")
-player = Player(name)
 enemy = Enemy()
 encounter = random.randint(1,100)
-progress = 10
+progress = 0
 if player.name == "Beckett":
     while i in range(0, 1000000):
-        time.sleep(0.1)
+        time.sleep(0.01)
         print("Nope")
         i += 1
 print(f"Hello, {player.name}")
 input("Press enter to continue...")
 stop_music()
 play_music_story()
-time.sleep(2)
+time.sleep(1)
 print(f"{player.name}, you are a brave adventurer. You have embarked on a quest to kill the Dark Lord after he destroyed the kingdom.")
 time.sleep(3)
 print("You will have to fight many enemies and make your way through the ruined kingdom.")
@@ -235,42 +611,22 @@ print("You will have to defeat the Dark Lord to win the game.")
 time.sleep(3)
 print(f"Good luck, {player.name}!")
 time.sleep(3)
-play_music_dun1()
-while progress < 100:
-    print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 5}%")
-    time.sleep(3)
-    if progress == 10 or progress == 20 or progress == 30 or progress == 40 or progress == 50 or progress == 60 or progress == 70 or progress == 80 or progress == 90:
-        print("You are making good progress!")
-        input("Press enter to continue...")
-        print("There is a shop here. You may buy a wooden sword for 30 gold. You may buy a health potion for 15 gold. You may buy wooden armor for 50 gold. You may buy a staff for 80 gold. 1. sword | 2. health potion | 3. armor | 4. staff | 5. leave")
-        player.Shop()
-    if encounter > 30:
-        print("You encounter an enemy!")
-        time.sleep(2)
-        player.Battle(enemy)
-        # fight while both combatants have HP above 0
-    if enemy.enemy_hp <= 0:
-        player.gold += 10
-        print("You gained 10 gold!")
-        player.kills += 1
-        stop_music()
-    play_music_dun1()
-    while i in range(0, 1000):
-        opt1 = input("Would you like to keep progressing, rest, or check stats?   1. progress | 2. rest | 3. check stats ")
-        if opt1 == "1":
-            progress += 1
-            days += 1
-            print("You make more progress.")
-            break
-        elif opt1 == "2":
-            player.hp = player.max_hp
-            days += 1
-            print("You rested for 1 day. Health fully restored!")
-            break
-        elif opt1 == "3":
-            player.check_stats()
-    enemy.enemy_hp = enemy.enemy_totalhp
-    encounter = random.randint(1,100)
+play_music_fields()
+Fields()
+print(f"You have made your way around the ruined fields and have found a small cave.")
+time.sleep(2)
+print("You enter the cave and find a craftsman.")
+time.sleep(1)
+print("'Hail, Craftsman.' you say.")
+time.sleep(1)
+print("However, the craftsman turns around and glares at you.")
+time.sleep(1)
+print(f"'I have been waiting for you, {player.name}. I have been watching your progress and I have seen your strength.'")
+time.sleep(2)
+print("'Too bad it will all end here!'")
+time.sleep(1)
+player.Boss_Battle(player, boss)
+
 
 print("You have reached 100% progress! You have found the Dark Lord's lair!")
 time.sleep(2)
