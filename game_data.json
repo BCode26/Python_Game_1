@@ -1,0 +1,34 @@
+{
+    "save_data": [
+        {
+            "number": "Save File 1",
+            "area": "Fields",
+            "progress": 0,
+            "wins_1": 0,
+            "wins_2": 0,
+            "wins_3": 0,
+            "wins_4": 0,
+            "wins_final": 0
+        },
+        {
+            "number": "Save File 2",
+            "area": "Fields",
+            "progress": 0,
+            "wins_1": 0,
+            "wins_2": 0,
+            "wins_3": 0,
+            "wins_4": 0,
+            "wins_final": 0
+        },
+        {
+            "number": "Save File 3",
+            "area": "Fields",
+            "progress": 0,
+            "wins_1": 0,
+            "wins_2": 0,
+            "wins_3": 0,
+            "wins_4": 0,
+            "wins_final": 0
+        }
+    ]
+}

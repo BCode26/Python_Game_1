@@ -16,7 +16,7 @@
             "name": "placeholder",
             "max_hp": 100,
             "atk": 0,
-            "magic": 15,
+            "magic": 10,
             "defe": 5,
             "magic_EX": 0
         },
@@ -43,14 +43,17 @@
     ],
     "bosses": {
         "craftsman": {
+            "name.not": "",
             "name": "the Craftsman",
             "desc": "boss 1"
         },
         "arachne": {
+            "name.not": "",
             "name": "Arachne",
             "desc": "boss 2"
         },
         "dark_lord": {
+            "name.not": "",
             "name": "the Dark Lord",
             "desc": "boss 3"
         },
@@ -60,8 +63,9 @@
             "desc": "boss?"
         },
         "final": {
+            "name.not": "",
             "name": "The Neverending Dark",
-            "desc": "not ]pos-s{;|]}#*[%}]|@"
+            "desc": "not]pos-s{;|]}#*[%}]|@"
 
         }
     

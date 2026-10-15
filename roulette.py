@@ -1,5 +1,6 @@
 import time
 import random
+import sys
 i = 1
 spin = random.randint(0, 36)
 money = 100
@@ -21,7 +22,7 @@ for i in range (0, 17):
 print("Now, let's play!")
 print("You have $100 to start")
 while i in range(0, 1000):
-    print("You have $", money)
+    print("You have $",money)
     if money < 0:
             print("You are out of money!")
             print("The casino kills you!")
@@ -30,6 +31,19 @@ while i in range(0, 1000):
     if bet == "number":
         number = int(input("What number would you like to bet on? (0-36) "))
         amount = int(input("How much would you like to bet? "))
+        if number == 17:
+            print("ALL IN ON 17 BLACK")
+            print("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+            if spin == 17:
+                print("YOU WON!!111!!11!!1!1!!")
+                let = input("LET IT RIDE? ")
+                if let == "yes":
+                    while i in range (0, 500):
+                        print("LET IT RIDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+                        time.sleep(0.17)
+                        i += 1
+                    if i == 500:
+                        sys.exit()
         if spin == number:
             print("You won! The number was", spin)
             print("You gained $", amount * 35)

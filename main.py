@@ -4,6 +4,17 @@ import random
 from pathlib import Path
 import json
 
+"""
+TO DO:
+- FIX MAGIC (TOO STRONG)
+- FINISH SAVE FILES
+- CREATE FUNCTIONS FOR ALL AREAS (DARK LAIR, LAB, VOID)
+- FINISH BOSSES
+- GET MUSIC FOR ALL AREAS
+- FIX SAVE FILE ERROR (IN AI)
+- FINISH STORY
+"""
+i = 1
 # Initialize pygame mixer
 pygame.mixer.init()
 def play_music_start():
@@ -547,7 +558,55 @@ class Player:
 
 # Loads character data from the .json file
 play_music_start()
-
+save = input("Do you already have a save file? ")
+if save == "yes":
+    with (Path(__file__).parent / "game_data.json").open(encoding="utf-8") as file:
+        save_file = json.load(file)["save_data"]
+    for number, slot in enumerate(save_file, start=1):
+        area = slot["area"]
+        progress = slot["progress"]
+        print(f"{number} {slot['number']}")
+        print(f"You are in the {area}")
+        if area == "Fields":
+            print(f"Your progress is at {progress * 5}%")
+        if area == "Caves":
+            print(f"Your progress is at {progress * 2.5}%")
+        if area == "Dark Lair":
+            print(f"Your progress is at {progress * 2}%")
+        if area == "Lab":
+            print(f"Your progress is at {progress * 1.25}%")
+        if area == "Void":
+            print(f"Your progress is at {progress}")
+        if slot['wins_1'] == 0:
+            print("          kills: 0 (see name after defeating this boss!)")
+        else:
+            print(f"Craftsman kills: {slot['wins_1']}")
+        if slot['wins_2'] == 0:
+            print("        kills: 0 (see name after defeating this boss!)")
+        else:
+            print(f"Arachne kills: {slot['wins_2']}")
+        if slot['wins_3'] == 0:
+            print("              kills: 0 (see name after defeating this boss!)")
+        else:
+            print(f"The Dark Lord kills: {slot['wins_3']}")
+        if slot['wins_4'] == 0:
+            pass
+        else:
+            print(f"Scyen kills: {slot['wins_4']}")
+        if slot['wins_final'] == 0:
+            pass
+        else:
+            print(f"Neverending Dark banishments: {slot['wins_final']}")
+    while True:
+        load = int(input("Load which save file? "))
+        if 1 <= load <= len(save_file):
+            slot = save_file[load - 1]
+            area = slot["area"]
+            progress = slot["progress"]
+            if area == "Fields":
+                Fields()
+            break
+        print("Invalid File Selected.")
 name = input("What is your name? ")
 
 with (Path(__file__).parent / "character.json").open(encoding="utf-8") as file:
@@ -585,10 +644,8 @@ print("Welcome")
 opt1 = "placeholder"
 days = 0
 boss = False
-i = 1
 enemy = Enemy()
 encounter = random.randint(1,100)
-progress = 0
 if player.name == "Beckett":
     while i in range(0, 1000000):
         time.sleep(0.01)
