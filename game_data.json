@@ -2,6 +2,10 @@
     "save_data": [
         {
             "number": "Save File 1",
+            "character": "",
+            "sword": 0,
+            "armor": 0,
+            "staff": 0,
             "area": "Fields",
             "progress": 0,
             "wins_1": 0,
@@ -12,6 +16,10 @@
         },
         {
             "number": "Save File 2",
+            "character": "",
+            "sword": 0,
+            "armor": 0,
+            "staff": 0,
             "area": "Fields",
             "progress": 0,
             "wins_1": 0,
@@ -23,6 +31,10 @@
         {
             "number": "Save File 3",
             "area": "Fields",
+            "sword": 0,
+            "armor": 0,
+            "staff": 0,
+            "character": "",
             "progress": 0,
             "wins_1": 0,
             "wins_2": 0,

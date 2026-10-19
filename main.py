@@ -3,6 +3,8 @@ import pygame
 import random
 from pathlib import Path
 import json
+import transfer
+import sys
 
 """
 TO DO:
@@ -15,6 +17,7 @@ TO DO:
 - FINISH STORY
 """
 i = 1
+progress = 0
 # Initialize pygame mixer
 pygame.mixer.init()
 def play_music_start():
@@ -72,7 +75,7 @@ def Fields():
             stop_music()
             play_music_fields()
         while i in range(0, 1000):
-            opt1 = input("Would you like to keep progressing, rest, or check stats? 1. progress | 2. rest | 3. check stats ")
+            opt1 = input("Would you like to keep progressing, rest, check stats, or save and quit? 1. progress | 2. rest | 3. check stats | 4. save and quit ")
             if opt1 == "1":
                 progress += 1
                 days += 1
@@ -85,6 +88,21 @@ def Fields():
                 break
             elif opt1 == "3":
                 player.check_stats()
+            elif opt1 == "4":
+                if not played:
+                    while True:
+                        save_slot = int(input("Which save slot would you like to save your game to? "))
+                        if save_slot != 1 or save_slot != 2 or save_slot != 3:
+                            print("Invalid input.")
+                            continue
+                print("Saving...")
+                transfer.File_Change(save_slot)
+                time.sleep(3)
+                print("Saved!")
+                sys.exit()
+            else:
+                print("Invalid input.")
+                continue
         enemy.enemy_hp = enemy.enemy_totalhp
         encounter = random.randint(1,100)
 
@@ -120,6 +138,15 @@ def Caves():
                 break
             elif opt1 == "3":
                 player.check_stats()
+            elif opt1 == "4":
+                print("Saving...")
+                transfer.File_Change()
+                time.sleep(3)
+                print("Saved!")
+                sys.exit()
+            else:
+                print("Invalid input.")
+                continue
         enemy.enemy_hp = enemy.enemy_totalhp
         encounter = random.randint(1,100)
 
@@ -558,8 +585,9 @@ class Player:
 
 # Loads character data from the .json file
 play_music_start()
-save = input("Do you already have a save file? ")
-if save == "yes":
+name = input("What is your name? ")
+played = input("Have you played before? ") == "yes"
+if played:
     with (Path(__file__).parent / "game_data.json").open(encoding="utf-8") as file:
         save_file = json.load(file)["save_data"]
     for number, slot in enumerate(save_file, start=1):
@@ -590,38 +618,38 @@ if save == "yes":
         else:
             print(f"The Dark Lord kills: {slot['wins_3']}")
         if slot['wins_4'] == 0:
-            pass
+                pass
         else:
             print(f"Scyen kills: {slot['wins_4']}")
         if slot['wins_final'] == 0:
-            pass
+                pass
         else:
             print(f"Neverending Dark banishments: {slot['wins_final']}")
+        time.sleep(7)
     while True:
         load = int(input("Load which save file? "))
-        if 1 <= load <= len(save_file):
-            slot = save_file[load - 1]
-            area = slot["area"]
-            progress = slot["progress"]
-            if area == "Fields":
-                Fields()
-            break
-        print("Invalid File Selected.")
-name = input("What is your name? ")
+        break
 
-with (Path(__file__).parent / "character.json").open(encoding="utf-8") as file:
-    characters = json.load(file)["characters"]
-for number, character in enumerate(characters, start=1):
-    print(f"{number}. {character['type']}")
+if not played:
+    with (Path(__file__).parent / "character.json").open(encoding="utf-8") as file:
+        characters = json.load(file)["characters"]
+    for number, character in enumerate(characters, start=1):
+        print(f"{number}. {character['type']}")
 
-while True:
-    try:
+    while True:
         choice = int(input("Choose a character: "))
-        if 1 <= choice <= len(characters):
+        if choice == 1:
+            character = "warrior"
             break
-    except ValueError:
-        pass
-    print("Enter a valid character number.")
+        elif choice == 2:
+            character = "mage"
+            break
+        elif choice == 3:
+            character = "tank"
+            break
+        elif choice == 4:
+            character = "barbarian"
+            break
 
 player = Player(name, characters[choice - 1])
 # The enemy
@@ -653,6 +681,7 @@ if player.name == "Beckett":
         i += 1
 print(f"Hello, {player.name}")
 input("Press enter to continue...")
+player.stat_up()
 stop_music()
 play_music_story()
 time.sleep(1)
@@ -670,20 +699,23 @@ print(f"Good luck, {player.name}!")
 time.sleep(3)
 play_music_fields()
 Fields()
-print(f"You have made your way around the ruined fields and have found a small cave.")
-time.sleep(2)
-print("You enter the cave and find a craftsman.")
-time.sleep(1)
-print("'Hail, Craftsman.' you say.")
-time.sleep(1)
-print("However, the craftsman turns around and glares at you.")
-time.sleep(1)
-print(f"'I have been waiting for you, {player.name}. I have been watching your progress and I have seen your strength.'")
-time.sleep(2)
-print("'Too bad it will all end here!'")
-time.sleep(1)
-player.Boss_Battle(player, boss)
-
+if progress == 20:
+    print(f"You have made your way around the ruined fields and have found a small cave.")
+    time.sleep(2)
+    print("You enter the cave and find a craftsman.")
+    time.sleep(1)
+    print("'Hail, Craftsman.' you say.")
+    time.sleep(1)
+    print("However, the craftsman turns around and glares at you.")
+    time.sleep(1)
+    print(f"'I have been waiting for you, {player.name}. I have been watching your progress and I have seen your strength.'")
+    time.sleep(2)
+    print("'Too bad it will all end here!'")
+    time.sleep(1)
+    player.Boss_Battle(player, boss)
+Caves()
+if progress == 40:
+    pass
 
 print("You have reached 100% progress! You have found the Dark Lord's lair!")
 time.sleep(2)
