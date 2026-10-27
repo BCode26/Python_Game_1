@@ -8,16 +8,16 @@ import sys
 
 """
 TO DO:
-- FIX MAGIC (TOO STRONG)
-- FINISH SAVE FILES
+- ADD EASY MODE
 - CREATE FUNCTIONS FOR ALL AREAS (DARK LAIR, LAB, VOID)
 - FINISH BOSSES
 - GET MUSIC FOR ALL AREAS
-- FIX SAVE FILE ERROR (IN AI)
 - FINISH STORY
+- START RHYTHM BATTLE PROJECT WHEN FINISHED
 """
 i = 1
 progress = 0
+dev = False
 # Initialize pygame mixer
 pygame.mixer.init()
 def play_music_start():
@@ -55,8 +55,25 @@ def play_music_approaching_death():
 def stop_music():
     pygame.mixer.music.stop()
 
+def Story():
+    stop_music()
+    play_music_story()
+    time.sleep(1)
+    print(f"{player.name}, you are a brave adventurer. You have embarked on a quest to kill the Dark Lord after he destroyed the kingdom.")
+    time.sleep(3)
+    print("You will have to fight many enemies and make your way through the ruined kingdom.")
+    time.sleep(3)
+    print("From killing enemies, you will gain gold to make trade with a shopkeeper at a shop.")
+    time.sleep(3)
+    print("After you make it to 100% progress, you will find the Dark Lord's lair.")
+    time.sleep(3)
+    print("You will have to defeat the Dark Lord to win the game.")
+    time.sleep(3)
+    print(f"Good luck, {player.name}!")
+    time.sleep(3)
+
 def Fields():
-    global progress, days, encounter
+    global progress, days, encounter, dev
     while progress < 20:
         print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 5}%")
         time.sleep(3)
@@ -89,14 +106,24 @@ def Fields():
             elif opt1 == "3":
                 player.check_stats()
             elif opt1 == "4":
+                while dev:
+                    dev = input("Can't save if you cheat! ") != "bypass"
+                    break
+                if dev:
+                    continue
                 if not played:
-                    while True:
-                        save_slot = int(input("Which save slot would you like to save your game to? "))
-                        if save_slot != 1 or save_slot != 2 or save_slot != 3:
-                            print("Invalid input.")
-                            continue
+                    save_slot = int(input("Which save slot would you like to save your game to? "))
+                    while save_slot != 1 and save_slot != 2 and save_slot != 3:
+                        save_slot = int(input("Invalid input. Please choose 1, 2, or 3: "))
+                else:
+                    save_slot = load
                 print("Saving...")
-                transfer.File_Change(save_slot)
+                transfer.JSON_Change(
+                    save_slot,
+                    player.gold,
+                    character if not played else None,
+                    progress,
+                )
                 time.sleep(3)
                 print("Saved!")
                 sys.exit()
@@ -107,7 +134,8 @@ def Fields():
         encounter = random.randint(1,100)
 
 def Caves():
-    while progress < 40:
+    global progress, days, encounter
+    while progress < 20:
         print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 2.5}%")
         time.sleep(3)
         if progress == 10 or progress == 20 or progress == 30 or progress == 40 or progress == 50 or progress == 60 or progress == 70 or progress == 80 or progress == 90 and not boss:
@@ -125,7 +153,7 @@ def Caves():
             stop_music()
             play_music_caves()
         while i in range(0, 1000):
-            opt1 = input("Would you like to keep progressing, rest, or check stats? 1. progress | 2. rest | 3. check stats ")
+            opt1 = input("Would you like to keep progressing, rest, check stats, or save and quit? 1. progress | 2. rest | 3. check stats | 4. save and quit ")
             if opt1 == "1":
                 progress += 1
                 days += 1
@@ -139,8 +167,19 @@ def Caves():
             elif opt1 == "3":
                 player.check_stats()
             elif opt1 == "4":
+                if not played:
+                    save_slot = int(input("Which save slot would you like to save your game to? "))
+                    while save_slot != 1 and save_slot != 2 and save_slot != 3:
+                        save_slot = int(input("Invalid input. Please choose 1, 2, or 3: "))
+                else:
+                    save_slot = load
                 print("Saving...")
-                transfer.File_Change()
+                transfer.JSON_Change(
+                    save_slot,
+                    player.gold,
+                    character if not played else None,
+                    progress,
+                )
                 time.sleep(3)
                 print("Saved!")
                 sys.exit()
@@ -150,17 +189,18 @@ def Caves():
         enemy.enemy_hp = enemy.enemy_totalhp
         encounter = random.randint(1,100)
 
+
 class Player:
     def __init__(self, name, character):
         self.name = name
-        self.max_hp = character["max_hp"]
+        self.max_hp = int(character["max_hp"])
         self.hp = self.max_hp
-        self.atk = character["atk"]
-        self.defe = character["defe"]
+        self.atk = int(character["atk"])
+        self.defe = int(character["defe"])
         self.gold = 0
         self.sword = 0
         self.armor = 0
-        self.magic = character["magic"]
+        self.magic = int(character["magic"])
         self.totalinv_space = 10
         self.remaininv_space = self.totalinv_space
         self.staff = 0
@@ -236,7 +276,7 @@ class Player:
                     continue
             elif action == "4":
                 if self.magic > 0:
-                    magic_damage = random.randint(10, 30)
+                    magic_damage = random.randint(5,20)
                     boss.boss_hp -= (magic_damage + self.magic)
                     print(f"You casted a spell to deal {magic_damage + self.magic} damage to the Craftsman!")
                     time.sleep(2)
@@ -315,7 +355,7 @@ class Player:
                     print("You failed to run away...")
             elif action == "5":
                 if self.magic > 0:
-                    magic_damage = random.randint(10, 30)
+                    magic_damage = random.randint(5, 20)
                     enemy.enemy_hp -= (magic_damage + self.magic)
                     print(f"You casted a spell to deal {magic_damage + self.magic} damage to the enemy!")
                     time.sleep(2)
@@ -587,24 +627,27 @@ class Player:
 play_music_start()
 name = input("What is your name? ")
 played = input("Have you played before? ") == "yes"
+with (Path(__file__).parent / "character.json").open(encoding="utf-8") as file:
+    characters = json.load(file)["characters"]
+
 if played:
     with (Path(__file__).parent / "game_data.json").open(encoding="utf-8") as file:
         save_file = json.load(file)["save_data"]
     for number, slot in enumerate(save_file, start=1):
         area = slot["area"]
-        progress = slot["progress"]
+        slot_progress = slot["progress"]
         print(f"{number} {slot['number']}")
         print(f"You are in the {area}")
         if area == "Fields":
-            print(f"Your progress is at {progress * 5}%")
+            print(f"Your progress is at {slot_progress * 5}%")
         if area == "Caves":
-            print(f"Your progress is at {progress * 2.5}%")
+            print(f"Your progress is at {slot_progress * 2.5}%")
         if area == "Dark Lair":
-            print(f"Your progress is at {progress * 2}%")
+            print(f"Your progress is at {slot_progress * 2}%")
         if area == "Lab":
-            print(f"Your progress is at {progress * 1.25}%")
+            print(f"Your progress is at {slot_progress * 1.25}%")
         if area == "Void":
-            print(f"Your progress is at {progress}")
+            print(f"Your progress is at {slot_progress}")
         if slot['wins_1'] == 0:
             print("          kills: 0 (see name after defeating this boss!)")
         else:
@@ -628,11 +671,24 @@ if played:
         time.sleep(7)
     while True:
         load = int(input("Load which save file? "))
-        break
+        if load in (1, 2, 3):
+            break
+        print("Invalid input. Please choose 1, 2, or 3.")
+    progress = save_file[load - 1]["progress"]
+    saved_character = save_file[load - 1]["character"]
+    character_data = next(
+        (
+            available_character
+            for available_character in characters
+            if available_character["type"].casefold() == saved_character.casefold()
+        ),
+        None,
+    )
+    if character_data is None:
+        raise ValueError(f"Save file {load} has no valid character.")
 
 if not played:
-    with (Path(__file__).parent / "character.json").open(encoding="utf-8") as file:
-        characters = json.load(file)["characters"]
+    easy = input("Do you want to play on easy mode? ") == "yes"
     for number, character in enumerate(characters, start=1):
         print(f"{number}. {character['type']}")
 
@@ -651,19 +707,30 @@ if not played:
             character = "barbarian"
             break
 
-player = Player(name, characters[choice - 1])
+    character_data = characters[choice - 1]
+
+player = Player(name, character_data)
+
+if name == "dev":
+    dev = True
+    print("DEV CHEATS")
+    atk_mult = float(input("How much would you like to multiply attack by? "))
+    player.atk *= atk_mult
+    def_mult = float(input("How much would you like to multiply defense by? "))
+    player.defe *= def_mult
+
 # The enemy
 class Enemy:
     def __init__(self):
-        self.enemy_hp = 30
+        self.enemy_hp = 50
         self.enemy_atk = 15
-        self.enemy_totalhp = 30
+        self.enemy_totalhp = 50
         self.enemyhit_chance = random.randint(1,100)
 # The Boss
 class Boss(Enemy):
     def __init__(self, bosses):
         super().__init__()
-        self.boss_atk = enemy.enemy_atk * 3
+        self.boss_atk = enemy.enemy_atk * 2
         self.boss_totalhp = enemy.enemy_totalhp * 5
         self.boss_hp = self.boss_totalhp
         self.bosshit_chance = random.randint(1,100)
@@ -681,25 +748,16 @@ if player.name == "Beckett":
         i += 1
 print(f"Hello, {player.name}")
 input("Press enter to continue...")
+if not played:
+    Story()
+if easy:
+    player.defe += 5
+    player.atk += 5
 player.stat_up()
-stop_music()
-play_music_story()
-time.sleep(1)
-print(f"{player.name}, you are a brave adventurer. You have embarked on a quest to kill the Dark Lord after he destroyed the kingdom.")
-time.sleep(3)
-print("You will have to fight many enemies and make your way through the ruined kingdom.")
-time.sleep(3)
-print("From killing enemies, you will gain gold to make trade with a shopkeeper at a shop.")
-time.sleep(3)
-print("After you make it to 100% progress, you will find the Dark Lord's lair.")
-time.sleep(3)
-print("You will have to defeat the Dark Lord to win the game.")
-time.sleep(3)
-print(f"Good luck, {player.name}!")
-time.sleep(3)
 play_music_fields()
-Fields()
-if progress == 20:
+if progress < 20:
+    Fields()
+elif progress == 20:
     print(f"You have made your way around the ruined fields and have found a small cave.")
     time.sleep(2)
     print("You enter the cave and find a craftsman.")
@@ -713,23 +771,7 @@ if progress == 20:
     print("'Too bad it will all end here!'")
     time.sleep(1)
     player.Boss_Battle(player, boss)
-Caves()
+elif progress < 40:
+    Caves()
 if progress == 40:
     pass
-
-print("You have reached 100% progress! You have found the Dark Lord's lair!")
-time.sleep(2)
-print("You enter the lair and find the Dark Lord waiting for you.")
-time.sleep(2)
-print(f"'Hello, {player.name}. I have been waiting for you. It took you {days} to find me.'")
-time.sleep(4)
-while i in range(0, 1000):
-    if days <= 100:
-        print("'You made it here in the minimum amount of time. Somehow, you figured out how to get here without resting once.'")
-        time.sleep(5)
-        print("'Incredible.'")
-        print("'Either way, draw your weapon. I will not go easy on you.'")
-    if days > 100 and days <= 150:
-        print("'You made it here quickly.'")
-        time.sleep(2)
-        print(f"'It only took you {days} days to find me.'")
