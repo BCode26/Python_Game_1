@@ -5,10 +5,21 @@ from pathlib import Path
 import json
 import transfer
 import sys
+import casino as cas
 
 """
+HEY! LOOK HERE!
+I AM MAKING AN RPG GAME FOR FUN. THERE MAY BE BUGS, BUT I TRY TO FIX THEM.
+I PUBLISH A NEW VERSION OF THE GAME EVERY MONDAY (IF I MISS IT, MAYBE THURSDAY)
+I USE COPYRIGHTED MUSIC FOR THE GAME, SO...
+ANYWAYS, HAVE FUN!
+"""
+"""
 TO DO:
-- ADD EASY MODE
+- ADD CASINO !!
+  - ADD SLOTS
+  - FIX BLACKJACK
+  - ADD MUSIC (USE CELESTE WAVEDASH.PPT)
 - CREATE FUNCTIONS FOR ALL AREAS (DARK LAIR, LAB, VOID)
 - FINISH BOSSES
 - GET MUSIC FOR ALL AREAS
@@ -16,8 +27,11 @@ TO DO:
 - START RHYTHM BATTLE PROJECT WHEN FINISHED
 """
 i = 1
+cas_chance = random.randint(1, 100)
+casino = False
 progress = 0
 dev = False
+
 # Initialize pygame mixer
 pygame.mixer.init()
 def play_music_start():
@@ -77,6 +91,16 @@ def Fields():
     while progress < 20:
         print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 5}%")
         time.sleep(3)
+        if cas_chance >= 95 and not casino:
+            print("You find a casino! You can gamble your gold here for a chance to win more gold!")
+            time.sleep(2)
+            print("Would you like to enter the casino? ")
+            choice = input("1. Yes | 2. No ")
+            if choice == "1":
+                casino = True
+                cas.Casino()
+            else:
+                print("You decided to not enter the casino.")
         if progress == 10 or progress == 20 or progress == 30 or progress == 40 or progress == 50 or progress == 60 or progress == 70 or progress == 80 or progress == 90 and not boss:
             print("You are making good progress!")
             input("Press enter to continue...")
@@ -132,12 +156,23 @@ def Fields():
                 continue
         enemy.enemy_hp = enemy.enemy_totalhp
         encounter = random.randint(1,100)
+        cas_chance += 5
 
 def Caves():
     global progress, days, encounter
     while progress < 20:
         print(f"It is day {days}. Your health is at {player.hp}/{player.max_hp}. Your progress is at {progress * 2.5}%")
         time.sleep(3)
+        if cas_chance >= 95 and not casino:
+            print("You find a casino! You can gamble your gold here for a chance to win more gold!")
+            time.sleep(2)
+            print("Would you like to enter the casino? ")
+            choice = input("1. Yes | 2. No ")
+            if choice == "1":
+                casino = True
+                cas.Casino()
+            else:
+                print("You decided to not enter the casino.")
         if progress == 10 or progress == 20 or progress == 30 or progress == 40 or progress == 50 or progress == 60 or progress == 70 or progress == 80 or progress == 90 and not boss:
             print("You are making good progress!")
             input("Press enter to continue...")
@@ -188,7 +223,7 @@ def Caves():
                 continue
         enemy.enemy_hp = enemy.enemy_totalhp
         encounter = random.randint(1,100)
-
+        cas_chance += 2.5
 
 class Player:
     def __init__(self, name, character):
