@@ -1,4 +1,6 @@
 import time
+import os
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 import random
 from pathlib import Path
@@ -6,6 +8,10 @@ import json
 import transfer
 import sys
 import casino as cas
+import launcher as launch
+
+if __name__ == "__main__" and not launch.launched:
+    raise SyntaxError("Run this game from the launcher!")
 
 """
 HEY! LOOK HERE!
@@ -23,8 +29,11 @@ TO DO:
 - CREATE FUNCTIONS FOR ALL AREAS (DARK LAIR, LAB, VOID)
 - FINISH BOSSES
 - GET MUSIC FOR ALL AREAS
+- ADD MULTIPLE ENEMY TYPES
+- RANDOMIZE ENEMY HEALTH IN ENEMY TYPES
+  - SAME WITH ATTACK
 - FINISH STORY
-- START ROGUELIKE PROJECT
+- START ROGUELIKE PROJECT WHEN DONE
 """
 i = 1
 cas_chance = random.randint(1, 100)

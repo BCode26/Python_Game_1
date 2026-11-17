@@ -23,7 +23,7 @@ def Blackjack(gold):
                 if dealer_stand and stand and total < 21:
                     if sum(player_card) > sum(dealer_card):
                         print("You win!")
-                        gold += bet
+                        gold += bet * 2
                         go = input("Would you like to play again? (yes/no) ")
                         if go == "no":
                             game = False
@@ -94,6 +94,6 @@ def Blackjack(gold):
         print("You are out of money!")
         print("The casino kills you!")
         sys.exit()
-
-gold = 100
-Blackjack(gold)
+if __name__ == "__main__":
+    gold = 100
+    Blackjack(gold)

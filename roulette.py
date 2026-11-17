@@ -3,28 +3,10 @@ import random
 import sys
 i = 1
 spin = random.randint(0, 36)
-money = 100
-print("Are you really bored?")
-time.sleep(1)
-print("WELL, NOW YOU CAN PLAY ROULETTE!")
-time.sleep(0.17)
-print("NO SCAM")
-time.sleep(0.17)
-print("NO UNHAPPINESS")
-time.sleep(0.17)
-print("NO FAIL")
-time.sleep(0.17)
-print("NO BAKE")
-time.sleep(0.17)
-for i in range (0, 17):
-    print("HA")
-    time.sleep(0.17)
-print("Now, let's play!")
-print(f"You have $100 to start")
-gold = 100
 def Roulette(gold):
     while i in range(0, 1000):
         print("You have $",gold)
+        spin = random.randint(0, 36)
         if gold < 0:
             print("You are out of money!")
             print("The casino kills you!")
@@ -33,6 +15,8 @@ def Roulette(gold):
         if bet == "number":
             number = int(input("What number would you like to bet on? (0-36) "))
             amount = int(input("How much would you like to bet? "))
+            if amount > gold:
+                print("You don't have enough money!")
             if number < 0 or number > 36:
                 print("Invalid number")
                 continue
@@ -72,4 +56,25 @@ def Roulette(gold):
         go = input("Would you like to play again? (yes/no) ")
         if go == "no":
             break
+
+if __name__ == "__main__":
+    print("Are you really bored?")
+    time.sleep(1)
+    print("WELL, NOW YOU CAN PLAY ROULETTE!")
+    time.sleep(0.17)
+    print("NO SCAM")
+    time.sleep(0.17)
+    print("NO UNHAPPINESS")
+    time.sleep(0.17)
+    print("NO FAIL")
+    time.sleep(0.17)
+    print("NO BAKE")
+    time.sleep(0.17)
+    for i in range (0, 17):
+        print("HA")
+        time.sleep(0.17)
+    print("Now, let's play!")
+    print(f"You have $100 to start")
+    gold = 100
+
         
